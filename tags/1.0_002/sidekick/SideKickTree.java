@@ -87,6 +87,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextArea;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.StringList;
+import org.gjt.sp.util.StandardUtilities;
 //}}}
 
 /**
@@ -579,7 +580,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 	on top */
 	public static StringList parserList() {
 		String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
-		Arrays.sort(serviceNames, new MiscUtilities.StringICaseCompare());
+		Arrays.sort(serviceNames, new StandardUtilities.StringCompare(true));
 		StringList sl = new StringList();
 		sl.add(SideKickPlugin.NONE);
 		sl.add(SideKickPlugin.DEFAULT);
