@@ -84,12 +84,20 @@ public class ElementUtil {
      */
     public static Position createEndPosition( Buffer buffer, SideKickElement element ) {
         int line_offset = buffer.getLineStartOffset(
-                    Math.max( element.getEndLocation().line - 1, 0 ) );
+            Math.max(
+                Math.min(element.getEndLocation().line - 1, buffer.getLineCount() - 1)
+            , 0));
         int[] totalVirtualWidth = new int[ 1 ];
-        int column_offset = buffer.getOffsetOfVirtualColumn(
+        int column_offset = -1;
+        try {
+            column_offset = buffer.getOffsetOfVirtualColumn(
                     Math.max( element.getEndLocation().line - 1, 0 ),
                     Math.max( element.getEndLocation().column - 1, 0 ),
                     totalVirtualWidth );
+        }
+        catch(ArrayIndexOutOfBoundsException e) {
+            column_offset = buffer.getLineEndOffset(buffer.getLineCount() - 1);
+        }
         if ( column_offset == -1 ) {
             column_offset = totalVirtualWidth[ 0 ];
         }
@@ -106,7 +114,6 @@ public class ElementUtil {
                        return lo + co;
                    }
                };
-
     }
 
     /**

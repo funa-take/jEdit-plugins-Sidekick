@@ -3,12 +3,13 @@ plugin.sidekick.SideKickPlugin.activate=startup
 
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov,Dale Anson,Martin Raspe,Alan Ezust,Shlomy Reinstein
-plugin.sidekick.SideKickPlugin.version=1.0
+plugin.sidekick.SideKickPlugin.version=1.2
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.03.99.00
 plugin.sidekick.SideKickPlugin.depend.1=jdk 1.5
 plugin.sidekick.SideKickPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.9
 plugin.sidekick.SideKickPlugin.description=The SideKick plugin provides a dockable window in which other plugins can display buffer structure in a tree view.
+plugin.sidekick.SideKickPlugin.usePluginHome=true
 
 # Menu bar stuff
 plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
@@ -73,7 +74,7 @@ options.sidekick.parser.mode=Mode
 options.sidekick.parser.parser=Parser
 options.sidekick.general.label=General Settings
 options.sidekick.code-completion.label=Code Completion Options
-options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.tree-follows-caret=Tree/combo-box selection follows caret position
 options.sidekick.auto-expand-tree-depth=Auto expand tree depth
 options.sidekick.buffer-change-parse=Parse on buffer switch
 options.sidekick.buffer-save-parse=Parse on buffer save
@@ -86,7 +87,7 @@ options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
 options.sidekick.complete-popup.accept-characters=Accept characters for completion popup
 options.sidekick.complete-popup.insert-characters=Accept characters to insert after completion
 options.sidekick.all=All
-
+options.sidekick.general.info=<p>See <b>Plugin Options - Sidekick - General</b> to configure options related to completion and parsing.</p>
 options.sidekick.showToolTips.label=Show tool tips
 options.sidekick.showToolTips=true
 options.sidekick.showStatusWindow.label=Show status window
@@ -94,6 +95,14 @@ options.sidekick.showStatusWindow=true
 
 options.sidekick.scrollToVisible.label=Scroll to make selection visible as much as possible
 options.sidekick.scrollToVisible=true
+
+options.sidekick.toolBar.label=Toolbar options
+options.sidekick.showToolBar.label=Show the toolbar (buffer structure in combo-boxes)
+sidekick.showToolBar=false
+options.sidekick.splitCombo.label=Use a separate combo-box for each level of the tree
+sidekick.splitCombo=false
+options.sidekick.singleIconInCombo.label=In single combo-box mode, hide icons of parent nodes
+sidekick.singleIconInCombo=true
 
 # Default parse on buffer change switch
 sidekick.buffer-change-parse=true
@@ -126,6 +135,7 @@ sidekick.complete-popup.insert-characters=\\
 sidekick-tree.title=Sidekick
 sidekick-tree.parse=Parse
 sidekick-tree.mode-options=Mode Options
+sidekick-tree.stop-parsing=Stop parsing
 sidekick-tree.parsing=Parsing
 sidekick-tree.not-parsed=Not parsed
 
@@ -147,3 +157,6 @@ options.sidekick.persistentFilter=true
 # filtering).
 options.sidekick.filter-visible-assets.label=Limit filter results to include only currently expanded assets
 options.sidekcik.filter-visible-assets=false
+
+# Toolbar
+sidekick-toolbar.select=Select

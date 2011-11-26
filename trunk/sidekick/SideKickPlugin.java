@@ -23,7 +23,6 @@
 package sidekick;
 
 //{{{ Imports
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.EditBus.EBHandler;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -31,12 +30,14 @@ import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.util.WorkThreadPool;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import javax.swing.SwingWorker;
 //}}}
 
 /**
@@ -44,10 +45,12 @@ import java.util.Set;
  * Manages a mapping of View to SideKick instances, creating/destroying
  * SideKick objects whenever Views are created/destroyed.  
  * 
- * @version $Id: SideKickPlugin.java 18256 2010-07-27 19:53:18Z shlomy $
+ * @version $Id: SideKickPlugin.java 19663 2011-07-12 02:37:38Z daleanson $
  */
 public class SideKickPlugin extends EditPlugin
 {
+	private static final String SHOW_TOOL_BAR = "sidekick.showToolBar";
+
 	/** The name of the dockable */
 	public static final String NAME = "sidekick-tree";
 	
@@ -64,9 +67,11 @@ public class SideKickPlugin extends EditPlugin
 	private static final String MACRO_PATH = "/macros";
 	private static Map<View, SideKick> sidekicks;
 	private static Map<String, SideKickParser> parsers;
-	private static WorkThreadPool worker;
+	private static Executor executor;
 	private static Set<Buffer> parsedBufferSet;
-	
+	private static Map<View, SideKickToolBar> toolBars;
+	private static boolean toolBarsEnabled;
+	private static Map<View, SwingWorker> workers;
 	
 	//{{{ start() method
 	public void start()
@@ -74,7 +79,10 @@ public class SideKickPlugin extends EditPlugin
 		BeanShell.getNameSpace().addCommandPath(MACRO_PATH, getClass());
 		sidekicks = new HashMap<View, SideKick>();
 		parsers = new HashMap<String, SideKickParser>();
+		workers = new HashMap<View, SwingWorker>();
 		parsedBufferSet = new HashSet<Buffer>();
+		toolBars = new HashMap<View, SideKickToolBar>();
+		toolBarsEnabled = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
@@ -115,6 +123,7 @@ public class SideKickPlugin extends EditPlugin
 		sidekicks = null;
 		parsers = null;
 		parsedBufferSet = null;
+		toolBars = null;
 	} //}}}
 
 	//{{{ handleViewUpdate() method
@@ -154,6 +163,18 @@ public class SideKickPlugin extends EditPlugin
 	public void handlePropertiesChanged(PropertiesChanged msg)
 	{
 		SideKickActions.propertiesChanged();
+		boolean showToolBar = jEdit.getBooleanProperty(SHOW_TOOL_BAR);
+		if (showToolBar != toolBarsEnabled)
+		{
+			toolBarsEnabled = showToolBar;
+			for (View v: jEdit.getViews())
+			{
+				if (toolBarsEnabled)
+					attachToolBar(v);
+				else
+					detachToolBar(v);
+			}
+		}
 	} //}}}
 
 	/**
@@ -206,11 +227,8 @@ public class SideKickPlugin extends EditPlugin
 	 * @param parserName the new parser we want to use
 	 * @since Sidekick 0.6
 	 */
-	private static String oldName = null;
 	public static void setParserForBuffer(Buffer buffer, String parserName) 
 	{
-		
-		oldName = parserName;
 		if (parserName.equals(NONE) ) {
 			buffer.setStringProperty(PARSER_PROPERTY, parserName);
 			return;
@@ -260,16 +278,23 @@ public class SideKickPlugin extends EditPlugin
 		sidekick.parse(showParsingMessage);
 	} //}}}
 
-	//{{{ addWorkRequest() method
-	public static void addWorkRequest(Runnable run, boolean inAWT)
+	public static void execute(Runnable runnable)
 	{
-		if(worker == null)
+		if (executor == null)
 		{
-			worker = new WorkThreadPool("SideKick",1);
-			worker.start();
+			executor = Executors.newSingleThreadExecutor();
 		}
-		worker.addWorkRequest(run,inAWT);
-	} //}}}
+		executor.execute(runnable);
+	}
+	
+	public static void execute(View view, SwingWorker worker) 
+	{
+		// QUESTION: there should be only one worker per view. Is it possible
+		// there could be more than one?
+		// ANSWER: No. 
+		workers.put(view, worker);
+		worker.execute();
+	}
 
 	//{{{ isParsingBuffer()
 	public static boolean isParsingBuffer(Buffer buffer)
@@ -293,13 +318,33 @@ public class SideKickPlugin extends EditPlugin
 
 	//}}}
 
+	//{{{ attachToolBar() method
+	private static void attachToolBar(View view)
+	{
+		SideKickToolBar toolBar = new SideKickToolBar(view);
+		view.addToolBar(toolBar);
+		toolBars.put(view, toolBar);
+	} //}}}
 
+	//{{{ detachToolBar() method
+	private static void detachToolBar(View view)
+	{
+		SideKickToolBar toolBar = toolBars.remove(view);
+		if (toolBar != null)
+		{
+			view.removeToolBar(toolBar);
+			toolBar.dispose();
+		}
+	} //}}}
+	
 	//{{{ initView() method
 	private static void initView(View view)
 	{
 		SideKick sideKick = new SideKick(view);
 		sidekicks.put(view, sideKick);
 		sideKick.parse(true);
+		if (toolBarsEnabled)
+			attachToolBar(view);
 	} //}}}
 
 	// {{{ getSideKick() method
@@ -314,6 +359,7 @@ public class SideKickPlugin extends EditPlugin
 		SideKick sidekick = sidekicks.get(view);
 		sidekick.dispose();
 		sidekicks.remove(view);
+		detachToolBar(view);
 	} //}}}
 
 	
@@ -338,6 +384,13 @@ public class SideKickPlugin extends EditPlugin
 		if (caretHandler != null)
 			textArea.removeCaretListener(caretHandler);
 	} //}}}
+
+	public static void stop(View view) {
+		SwingWorker worker = workers.get(view);
+		if (worker != null && !worker.isCancelled() && !worker.isDone()) {
+			worker.cancel(true);	
+		}
+	}
 
 	//}}}
 }

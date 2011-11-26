@@ -1,9 +1,8 @@
-
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"><!-- jEdit buffer-local properties: -->
+<?xml version="1.0" encoding="utf-8"?>
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.docbook.org/xsd/4.4/docbook.xsd' >
+<!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true:folding=sidekick: -->
-<book>
-
   <bookinfo>
     <title>SideKick plugin user's guide</title>
 
@@ -166,6 +165,36 @@
   Asset at Caret</guimenuitem> selects the asset at the caret position.
  </para>
 
+  </chapter>
+
+  <chapter id="toolbar">
+    <title>Toolbar</title>
+    
+    <para>
+  SideKick can optionally display the structure of the buffer in a toolbar, using
+  one or more combo-boxes. This option is useful where screen real-estate is
+  important and the tree takes too much of the screen. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Show the assets in a
+      combo-box (inside a toolbar)</guimenuitem>.
+  By default, a single combo-box is shown, which can be used to jump to various
+  positions inside the buffer.
+    </para>
+    <para>
+  There is also an option to show a separate check-box for each level in the
+  SideKick tree. To use this option, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Use a separate combo-box
+      for each level of the tree</guimenuitem>.
+    </para>
+    <para>
+  To make the combo-box (or multiple combo-boxes) show the asset where the caret is
+  currently located, select
+      <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;
+      <guisubmenu>General</guisubmenu>&gt;<guimenuitem>Tree/combo-box selection
+      follows caret position</guimenuitem>.
+    </para>
+  
   </chapter>
 
   <chapter id="folding">
@@ -406,6 +435,19 @@ and is given an initial value by the <classname>SideKickParsedData</classname> c
   <appendix id="changes">
     <title>Change log</title>
     <itemizedlist>
+      <listitem>
+        <para>
+          <emphasis role="bold">Version 1.1</emphasis>
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+                Added options for showing the structure of the buffer in a toolbar (using
+                combo-boxes), for cases where the tree takes too much screen space. 
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <para>
           <emphasis role="bold">Version 1.0</emphasis>
