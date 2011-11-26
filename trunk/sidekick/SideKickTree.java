@@ -127,6 +127,54 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         private JTextField searchField;
         // }}}
 
+	// Funa edit
+	public void findString(String nodename, boolean startWith, boolean gotoSelected) {
+		findNode(tree.getModel().getRoot(), nodename, startWith, gotoSelected);
+	}
+	
+	boolean findNode(Object node, String nodename, boolean startWith, boolean gotoSelected) {
+		TreeModel tm = tree.getModel();
+		// System.out.println(node);
+		if (tm.isLeaf(node)) {
+			if ((startWith && node.toString().startsWith(nodename)) ||
+				(!startWith && node.toString().equals(nodename))) {
+			// System.out.println(node instanceof TreeNode && tm instanceof DefaultTreeModel);
+			if (node instanceof TreeNode && tm instanceof DefaultTreeModel) {
+				
+				TreeNode tns[] = ((DefaultTreeModel)tm).getPathToRoot((TreeNode)node);
+				TreePath tp = new TreePath(tns);
+				if (gotoSelected) {
+					tree.scrollPathToVisible(tp);
+					tree.setSelectionPath(tp);
+				}
+				Object value = ((DefaultMutableTreeNode)tp
+					.getLastPathComponent()).getUserObject();
+					
+					if (value instanceof IAsset) {
+						IAsset asset = (IAsset)value;
+						
+						JEditTextArea textArea = view.getTextArea();
+						
+						textArea.setCaretPosition(asset.getStart().getOffset());
+						
+						view.getTextArea().grabFocus();
+					}
+					return true;
+			}
+				}
+		} else {
+			int count = tree.getModel().getChildCount(node);
+			for (int i = 0; i < count; i++) {
+				if (findNode(tree.getModel().getChild(node, i), nodename, startWith, gotoSelected)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	
         // {{{ SideKickTree constructor
         public SideKickTree(View view, boolean docked)
         {
@@ -306,7 +354,9 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         // {{{ focusOnDefaultComponent() method
         public void focusOnDefaultComponent()
         {
-                searchField.requestFocusInWindow();
+		// funa edit
+		// searchField.requestFocusInWindow();
+		tree.requestFocusInWindow();
         }        // }}}
 
         // {{{ addNotify() method
@@ -1287,6 +1337,14 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 caretTimer.stop();
                         }
+			// Funa edit start
+			if (ClassLoader.getSystemResource("org/gjt/sp/jedit/gui/UserKey.class") != null) {
+				// org.gjt.sp.jedit.gui.UserKey.consume(evt);
+				org.gjt.sp.jedit.gui.UserKey.consume(evt, 0, 0, 0, 0, true);
+				if (evt.isConsumed()) {
+					return;
+				}
+			}
 
                         switch (evt.getKeyCode() )
                         {
@@ -1304,7 +1362,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         break;
                                 case KeyEvent.VK_ENTER:
                                         evt.consume();
-
+                                        
                                         TreePath path = tree.getSelectionPath();
 
                                         if (path != null)
@@ -1336,9 +1394,30 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                                                 selectPath(path);
                                                                 textArea.requestFocus();
                                                         }
+							
+							// Funa edit
+							if (!evt.isAltDown()) {
+								view.getTextArea().grabFocus();
+							} else {
+								// searchField.grabFocus();
+								tree.grabFocus();
                                                 }
                                         }
+				}
                                         break;
+			}
+			
+			if (!evt.isConsumed() && evt.getSource().equals(searchField)){
+				switch (evt.getKeyCode()) {
+				case KeyEvent.VK_ESCAPE:
+					evt.consume();
+					if (searchField.getText().length() == 0) {
+						view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
+					} else {
+						searchField.setText("");
+						updateFilter();
+					}
+					break;
                                 case KeyEvent.VK_BACK_SPACE:
                                         evt.consume();
                                         if (searchField.getText().length() <= 1)
@@ -1421,9 +1500,15 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         break;
                         }
                 }
+			// funa edit end
+		}
 
                 public void keyTyped(KeyEvent evt)
                 {
+			// Funa edit
+			if (evt.isAltDown()) {
+				return;
+			}
                         Character c = evt.getKeyChar();
                         // TODO: What is the correct combo here to filter
                         // non-identifier characters?
