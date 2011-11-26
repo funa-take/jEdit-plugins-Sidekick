@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<TOC xmlns="http://www.w3.org/TR/xhtml1/transitional">
+  <ENTRY HREF="#id36078114">
+    <TITLE>SideKick plugin user's guide</TITLE>
+    <ENTRY HREF="#browser">
+      <TITLE>The SideKick dockable</TITLE>
+    </ENTRY>
+    <ENTRY HREF="#moving-around">
+      <TITLE>Moving around</TITLE>
+    </ENTRY>
+    <ENTRY HREF="#folding">
+      <TITLE>Folding</TITLE>
+    </ENTRY>
+    <ENTRY HREF="#completion">
+      <TITLE>Completion</TITLE>
+    </ENTRY>
+    <ENTRY HREF="#other-plugins">
+      <TITLE>Developing SideKick back-ends</TITLE>
+      <ENTRY HREF="#preliminaries">
+        <TITLE>Preliminaries</TITLE>
+      </ENTRY>
+      <ENTRY HREF="#class-sidekickparser">
+        <TITLE>The SideKickParser class</TITLE>
+      </ENTRY>
+      <ENTRY HREF="#implement-structure-tree">
+        <TITLE>Implementing a structure tree</TITLE>
+      </ENTRY>
+      <ENTRY HREF="#implement-completion">
+        <TITLE>Implementing completion popups</TITLE>
+      </ENTRY>
+    </ENTRY>
+    <ENTRY HREF="#futureplans">
+      <TITLE> Future Plans </TITLE>
+    </ENTRY>
+    <ENTRY HREF="#changes">
+      <TITLE>Change log</TITLE>
+    </ENTRY>
+  </ENTRY>
+</TOC>
