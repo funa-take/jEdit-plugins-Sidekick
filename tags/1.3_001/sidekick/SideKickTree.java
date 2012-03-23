@@ -381,6 +381,15 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         r.width = 1;
                         tree.scrollRectToVisible(r);
                 }
+                
+                // funa edit
+                Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                
+                if (value instanceof IAsset)
+                {
+                	String info = ((IAsset) value).getShortString();
+                	view.getStatus().setMessage(info);
+                }
         }        // }}}
         
         // {{{ handleEditPaneUpdate() method

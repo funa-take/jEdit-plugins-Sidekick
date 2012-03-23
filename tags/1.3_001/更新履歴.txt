@@ -2,6 +2,7 @@
 やっぱり使ってみる。
 UserKey で CtrlとShiftを使えるようにした。
 フォーカスを戻した。(searchTextFieldに来るように）
+ツリーで選択した項目を StatusBar に表示
 
 2012/03/21
 1.3 を改良
