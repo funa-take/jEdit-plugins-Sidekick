@@ -1,23 +1,23 @@
 /*
- * SideKickTree.java
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
- *
- * Copyright (C) 2000, 2003 Slava Pestov
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+* SideKickTree.java
+* :tabSize=8:indentSize=8:noTabs=false:
+* :folding=explicit:collapseFolds=1:
+*
+* Copyright (C) 2000, 2003 Slava Pestov
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 package sidekick;
@@ -90,17 +90,17 @@ import org.gjt.sp.util.StringList;
 // }}}
 
 /**
- * The Structure Browser dockable.  One instance is created for each View.
- */
+* The Structure Browser dockable.  One instance is created for each View.
+*/
 public class SideKickTree extends JPanel implements DefaultFocusComponent
 {
-
+	
         // {{{ Instance variables
         private RolloverButton parseBtn;
         
         private Icon parseIcon;
         private Icon stopIcon;
-
+        
         private JComboBox parserCombo;
         protected JTree tree;
         // protected JEditorPane status;
@@ -114,19 +114,19 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         protected JCheckBoxMenuItem onChange;
         protected JCheckBoxMenuItem followCaret;
         protected JCheckBoxMenuItem onSave;
-
+        
         protected View view;
         private Timer caretTimer;
-
+        
         protected SideKickParsedData data;
-
+        
         private int autoExpandTree = 0;
         private JPanel toolBox;
         private JPanel parserPanel = null;
-
+        
         private JTextField searchField;
         // }}}
-
+        
 	// Funa edit
 	public void findString(String nodename, boolean startWith, boolean gotoSelected) {
 		findNode(tree.getModel().getRoot(), nodename, startWith, gotoSelected);
@@ -179,18 +179,18 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         public SideKickTree(View view, boolean docked)
         {
                 super(new BorderLayout());
-
+                
                 this.view = view;
-
+                
                 topPanel = new JPanel(new BorderLayout());
-
+                
                 // create toolbar with parse button
                 JToolBar buttonBox = new JToolBar();
                 buttonBox.setFloatable(false);
                 filterBox = new JToolBar();
                 filterBox.setLayout(new BorderLayout());
                 filterBox.setFloatable(false);
-
+                
                 parseIcon = GUIUtilities.loadIcon("Parse.png");
 		stopIcon = GUIUtilities.loadIcon(jEdit.getProperty("hypersearch-results.stop.icon"));                
                 parseBtn = new RolloverButton(parseIcon);
@@ -205,16 +205,16 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 RolloverButton propsBtn = new RolloverButton(GUIUtilities.loadIcon("ButtonProperties.png"));
                 propsBtn.setToolTipText(jEdit.getProperty("sidekick-tree.mode-options"));
                 propsBtn.addActionListener(new SideKickProperties());
-
+                
                 configMenu = new JPopupMenu("Parse");
                 followCaret = new JCheckBoxMenuItem("Follow Caret");
-
+                
                 configMenu.add(followCaret);
                 // configMenu = new PopupMenu("Parse on...");
                 JMenuItem item = new JMenuItem("Parse on...");
                 item.setEnabled(false);
                 configMenu.add(item);
-
+                
                 onChange = new JCheckBoxMenuItem("Buffer change");
                 onChange.setState(SideKick.isParseOnChange());
                 onSave = new JCheckBoxMenuItem("Buffer save");
@@ -230,46 +230,46 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
                 RolloverButton clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
                 clearSearchBtn.addActionListener(new ActionListener()
-                {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                                searchField.setText("");
-                                updateFilter();
-                        }
-                }
-               );
+                	{
+                		public void actionPerformed(ActionEvent ae)
+                		{
+                			searchField.setText("");
+                			updateFilter();
+                		}
+                	}
+                	);
                 clearSearchBtn.setToolTipText(jEdit.getProperty("sidekick-tree.clear-filter.tooltip"));
-
+                
                 buttonBox.add(parseBtn);
                 buttonBox.add(propsBtn);
                 filterBox.add(search, BorderLayout.WEST);
                 filterBox.add(searchField, BorderLayout.CENTER);
                 filterBox.add(clearSearchBtn, BorderLayout.EAST);
-
+                
                 buttonBox.add(Box.createGlue());
-
+                
                 parserCombo = new JComboBox();
                 reloadParserCombo();
                 parserCombo.setToolTipText(jEdit.getProperty("sidekick-tree.parsercombo.tooltip"));
-
+                
                 buttonBox.add(parserCombo);
                 parserCombo.addActionListener(ah);
                 parserCombo.addActionListener(new ActionListener()
-                {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                                searchField.setText("");
-                                updateFilter();
-                        }
-                }
-               );
-
+                	{
+                		public void actionPerformed(ActionEvent ae)
+                		{
+                			searchField.setText("");
+                			updateFilter();
+                		}
+                	}
+                	);
+                
                 toolBox = new JPanel(new BorderLayout());
                 toolBox.add(BorderLayout.NORTH, buttonBox);
                 toolBox.add(BorderLayout.SOUTH, filterBox);
-
+                
                 topPanel.add(BorderLayout.NORTH, toolBox);
-
+                
                 // create a faux model that will do until a real one arrives
                 TreeModel emptyModel = new DefaultTreeModel(new DefaultMutableTreeNode(null));
                 emptyModel = new FilteredTreeModel((DefaultTreeModel) emptyModel, true);
@@ -282,18 +282,18 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         tree.addMouseMotionListener(new MouseHandler());
                 }
                 searchField.addKeyListener(kh);
-
+                
                 // looks bad with the OS X L&F, apparently...
                 if (!OperatingSystem.isMacOSLF())
                 {
                         tree.putClientProperty("JTree.lineStyle", "Angled");
                 }
-
+                
                 tree.setVisibleRowCount(10);
                 tree.setCellRenderer(new Renderer());
-
+                
                 topPanel.add(BorderLayout.CENTER, new JScrollPane(tree));
-
+                
                 status = new JTextArea();
                 // status.setContentType("text/html");
                 status.setEditable(false);
@@ -301,23 +301,23 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 status.setForeground(jEdit.getColorProperty("view.fgColor"));
                 status.setFont(view.getEditPane().getTextArea().getPainter().getFont());
                 JScrollPane status_scroller = new JScrollPane(status);
-
+                
                 splitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, topPanel, status_scroller);
-
+                
                 status_scroller.setMinimumSize(new Dimension(0, 30));
                 splitter.setOneTouchExpandable(true);
                 splitter.setResizeWeight(1.0f);
                 int location = splitter.getSize().height - splitter.getInsets().bottom - splitter.getDividerSize() - status_scroller.getMinimumSize().height;
                 location = jEdit.getIntegerProperty("sidekick.splitter.location", location);
-
+                
                 splitter.setDividerLocation(location);
-
+                
                 // add(splitter);
-
+                
                 propertiesChanged();
-
+                
                 CaretHandler caretListener = new CaretHandler();
-
+                
                 EditPane[] editPanes = view.getEditPanes();
                 for (int i = 0; i < editPanes.length; i++)
                 {
@@ -325,54 +325,52 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         textArea.putClientProperty(CaretHandler.class, caretListener);
                         textArea.addCaretListener(caretListener);
                 }
-
+                
                 update();
         }        // }}}
-
+        
         public void showStopButton(final boolean show)
         {
                 SwingUtilities.invokeLater (new Runnable()
-                {
-                        public void run()
-                        {
-                        	if (show && parseIcon.equals(parseBtn.getIcon()))
-                        	{
-                        		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
-                        		parseBtn.setIcon(stopIcon);
-                        		
-                        	}
-                        	else 
-                        	{
-                        		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
-                        		parseBtn.setIcon(parseIcon);
-                        	}
-                        }
-                }
-               );
+                	{
+                		public void run()
+                		{
+                			if (show && parseIcon.equals(parseBtn.getIcon()))
+                			{
+                				parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
+                				parseBtn.setIcon(stopIcon);
+                				
+                			}
+                			else 
+                			{
+                				parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
+                				parseBtn.setIcon(parseIcon);
+                			}
+                		}
+                	}
+                	);
         }
-
+        
         // {{{ focusOnDefaultComponent() method
         public void focusOnDefaultComponent()
         {
-		// funa edit
-		// searchField.requestFocusInWindow();
-                tree.requestFocusInWindow();
+		searchField.requestFocusInWindow();
         }        // }}}
-
+        
         // {{{ addNotify() method
         public void addNotify()
         {
                 super.addNotify();
                 EditBus.addToBus(this);
         }        // }}}
-
+        
         // {{{ removeNotify() method
         public void removeNotify()
         {
                 super.removeNotify();
                 EditBus.removeFromBus(this);
         }        // }}}
-
+        
         // {{{ selectPath() method
         protected void selectPath(TreePath path)
         {
@@ -384,7 +382,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         tree.scrollRectToVisible(r);
                 }
         }        // }}}
-
+        
         // {{{ handleEditPaneUpdate() method
         @EBHandler
         public void handleEditPaneUpdate(EditPaneUpdate epu)
@@ -392,20 +390,20 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 EditPane editPane = epu.getEditPane();
                 if (epu.getWhat() == EditPaneUpdate.CREATED)
                 {
-					CaretHandler listener = new CaretHandler();
-					JEditTextArea textArea = editPane.getTextArea();
-					textArea.putClientProperty(CaretHandler.class, listener);
-					textArea.addCaretListener(listener);
+                	CaretHandler listener = new CaretHandler();
+                	JEditTextArea textArea = editPane.getTextArea();
+                	textArea.putClientProperty(CaretHandler.class, listener);
+                	textArea.addCaretListener(listener);
                 }
         }        // }}}
-
+        
         // {{{ handlePropertiesChanged method
         @EBHandler
         public void handlePropertiesChanged(PropertiesChanged msg)
         {
                 propertiesChanged();
         }        // }}}
-
+        
         // {{{ handleSideKickUpdate() method
         @EBHandler
         public void handleSideKickUpdate(SideKickUpdate msg)
@@ -415,13 +413,13 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         update();
                 }
         }        // }}}
-
+        
         // {{{ setStatus() method
         public void setStatus(String msg)
         {
                 status.setText(msg);
         }        // }}}
-
+        
         // {{{ addData method
         protected void addData(Object obj, Stack<String> keys)
         {
@@ -453,13 +451,13 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         model.addSearchKey(node, key);
                                 }
                         }
-
+                        
                         Enumeration<DefaultMutableTreeNode> e;
                         for (e = node.children(); e.hasMoreElements();)
                         {
                                 addData(e.nextElement(), keys);
                         }
-
+                        
                         keys.pop();
                 }
                 else
@@ -467,7 +465,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         Log.log(Log.DEBUG, this, "addData called on a node that isn't a treenode!!!!!!!!!");                        // how exciting!
                 }
         }        // }}}
-
+        
         // {{{ updateSearchData() method
         protected void updateSearchData()
         {
@@ -476,7 +474,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 root = (DefaultMutableTreeNode) model.getRoot();
                 addData(root, new Stack<String>());
         }        // }}}
-
+        
         // {{{ update() method
         protected void update()
         {
@@ -492,7 +490,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 parserCombo.setSelectedItem(parser.getName());
                         }
                 }
-
+                
                 data = SideKickParsedData.getParsedData(view);
                 if (parser == null || data == null)
                 {
@@ -511,7 +509,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
                 updateSearchData();
-
+                
                 if (data != null && data.expansionModel != null)
                 {
                         // collapse all rows, then expand per the expansion model
@@ -543,75 +541,75 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         {
                                                 tree.expandRow(j);
                                         }
-
+                                        
                                 }
                         }
                 }
-
+                
                 if (searchField.getText().length() != 0)
                 {
                         updateFilter();
                 }
-
+                
         }        // }}}
-
+        
         // {{{ expandAll() methods
         /**
-         * Expand or collapse all nodes in the tree.
-         * @param expand if true, expand all nodes, if false, collapse all nodes
-         */
+        * Expand or collapse all nodes in the tree.
+        * @param expand if true, expand all nodes, if false, collapse all nodes
+        */
         public void expandAll(boolean expand)
         {
                 TreeNode root = (TreeNode) tree.getModel().getRoot();
                 expandAll(new TreePath(root), expand);
         }
-
+        
         // recursive method to traverse children
         private void expandAll(final TreePath parent, final boolean expand)
         {
                 SwingUtilities.invokeLater(new Runnable()
-                {
-                        public void run()
-                        {
-                                TreeNode node = (TreeNode) parent.getLastPathComponent();
-                                if (node.getChildCount() >= 0)
-                                {
-                                        for (Enumeration e = node.children(); e.hasMoreElements();)
-                                        {
-                                                TreeNode n = (TreeNode) e.nextElement();
-                                                TreePath path = parent.pathByAddingChild(n);
-                                                expandAll(path, expand);
-                                        }
-                                }
-
-                                // expansion or collapse must be done from the bottom up
-                                if (expand)
-                                {
-                                        tree.expandPath(parent);
-                                }
-                                else
-                                {
-                                        tree.collapsePath(parent);
-                                }
-                        }
-                } );
+                	{
+                		public void run()
+                		{
+                			TreeNode node = (TreeNode) parent.getLastPathComponent();
+                			if (node.getChildCount() >= 0)
+                			{
+                				for (Enumeration e = node.children(); e.hasMoreElements();)
+                				{
+                					TreeNode n = (TreeNode) e.nextElement();
+                					TreePath path = parent.pathByAddingChild(n);
+                					expandAll(path, expand);
+                				}
+                			}
+                			
+                			// expansion or collapse must be done from the bottom up
+                			if (expand)
+                			{
+                				tree.expandPath(parent);
+                			}
+                			else
+                			{
+                				tree.collapsePath(parent);
+                			}
+                		}
+                	} );
         }        // }}}
-
+        
         // {{{ buildTree() method
         protected JTree buildTree(TreeModel model)
         {
                 return new CustomTree(model);
         }        // }}}
-
+        
         // {{{ buildActionListener() method
         /**
-         * Creates an action listener for the parse button.
-         */
+        * Creates an action listener for the parse button.
+        */
         protected ActionListener buildActionListener()
         {
                 return new ActionHandler();
         }        // }}}
-
+        
         // {{{ propertiesChanged() method
         protected void propertiesChanged()
         {
@@ -620,7 +618,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 String mode = m != null ? m.getName() : null;
                 autoExpandTree = AbstractModeOptionPane.getIntegerProperty(mode, SideKick.AUTO_EXPAND_DEPTH, 1);
                 // autoExpandTree = ModeOptions.getAutoExpandTreeDepth();
-
+                
                 if (AbstractModeOptionPane.getBooleanProperty(mode, SideKick.SHOW_STATUS))
                 {
                         if (!statusShowing)
@@ -638,25 +636,25 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         add(topPanel);
                         statusShowing = false;
                 }
-
+                
                 // show or hide the filter box
                 final boolean showFilter = jEdit.getBooleanProperty(SideKick.SHOW_FILTER, true);
                 if (showFilter != filterBox.isVisible())
                 {
                         SwingUtilities.invokeLater(new Runnable()
-                        {
-                                public void run()
-                                {
-                                        filterBox.setVisible(showFilter);
-                                        searchField.setEnabled(showFilter);
-                                }
-                        } );
+                        	{
+                        		public void run()
+                        		{
+                        			filterBox.setVisible(showFilter);
+                        			searchField.setEnabled(showFilter);
+                        		}
+                        	} );
                 }
         }        // }}}
-
+        
         // {{{ parserList() method
         /** @return a list of parsers, sorted, with special choices
-         * on top */
+        * on top */
         public static StringList parserList()
         {
                 String[] serviceNames = ServiceManager.getServiceNames(SideKickParser.SERVICE);
@@ -667,7 +665,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 sl.addAll(serviceNames);
                 return sl;
         }        // }}}
-
+        
         // {{{ reloadParserCombo() method
         void reloadParserCombo()
         {
@@ -695,7 +693,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }        // }}}
-
+        
         // {{{ addParserPanel() method
         void addParserPanel(SideKickParser parser)
         {
@@ -719,7 +717,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         focusOnDefaultComponent();
                 }
         }        // }}}
-
+        
         // {{{ removeParserPanel() method
         void removeParserPanel()
         {
@@ -729,12 +727,12 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         parserPanel = null;
                 }
         }        // }}}
-
+        
         // {{{ expandTreeWithDelay() method
         /**
-         * Expands the tree after a delay.
-         * The delay timer is restarted each time this method is called.
-         */
+        * Expands the tree after a delay.
+        * The delay timer is restarted each time this method is called.
+        */
         protected void expandTreeWithDelay()
         {
                 if (caretTimer != null)
@@ -744,32 +742,32 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 else
                 {
                         caretTimer = new Timer(0, new ActionListener()
-                        {
-                                public void actionPerformed(ActionEvent evt)
-                                {
-                                        // If the filter is *not* persistent, then clear
-                                        // it when the tree is expanded for the current
-                                        // caret position.
-                                        if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
-                                        {
-                                                if (searchField.getText().length() > 0)		// NOPMD
-                                                {
-                                                        searchField.setText("");
-                                                        updateFilter(false);
-                                                }
-                                        }
-                                        TextArea textArea = view.getTextArea();
-                                        int caret = textArea.getCaretPosition();
-                                        Selection s = textArea.getSelectionAtOffset(caret);
-                                        expandTreeAt(s == null ? caret : s.getStart());
-                                }
-                        } );
+                        	{
+                        		public void actionPerformed(ActionEvent evt)
+                        		{
+                        			// If the filter is *not* persistent, then clear
+                        			// it when the tree is expanded for the current
+                        			// caret position.
+                        			if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
+                        			{
+                        				if (searchField.getText().length() > 0)		// NOPMD
+                        				{
+                        					searchField.setText("");
+                        					updateFilter(false);
+                        				}
+                        			}
+                        			TextArea textArea = view.getTextArea();
+                        			int caret = textArea.getCaretPosition();
+                        			Selection s = textArea.getSelectionAtOffset(caret);
+                        			expandTreeAt(s == null ? caret : s.getStart());
+                        		}
+                        	} );
                         caretTimer.setInitialDelay(500);
                         caretTimer.setRepeats(false);
                 }
                 caretTimer.start();
         }        // }}}
-
+        
         // {{{ expandTreeAt() method
         protected void expandTreeAt(int dot)
         {
@@ -777,7 +775,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 {
                         return;
                 }
-
+                
                 TreePath treePath = data.getTreePathForPosition(dot);
                 if (treePath != null)
                 {
@@ -798,28 +796,28 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }        // }}}
-
+        
         protected void expandCurrentNode()
         {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
                 TreePath path = new TreePath(node.getPath());
                 tree.expandPath(path);
         }
-
+        
         protected void collapseCurrentNode()
         {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
                 TreePath path = new TreePath(node.getPath());
                 tree.collapsePath(path);
         }
-
+        
         // {{{ Inner classes
-
+        
         // {{{ CustomTree class
         /**
-         * A JTree with added mouse handling.  Other plugins providing similar trees
-         * can extend CustomTree and override the mouse methods.
-         */
+        * A JTree with added mouse handling.  Other plugins providing similar trees
+        * can extend CustomTree and override the mouse methods.
+        */
         protected class CustomTree extends JTree
         {
                 protected CustomTree(TreeModel model)
@@ -837,69 +835,69 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         switch (evt.getID() )
                         {
                                 // {{{ MOUSE_PRESSED...
-                                case MouseEvent.MOUSE_PRESSED:
-                                        TreePath path = getPathForLocation(evt.getX(), evt.getY());
-                                        if (path != null)
-                                        {
-                                                Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-
-                                                if (value instanceof IAsset)
-                                                {
-                                                        IAsset asset = (IAsset) value;
-
-                                                        JEditTextArea textArea = view.getTextArea();
-                                                        EditPane editPane = view.getEditPane();
-
-                                                        if (evt.getClickCount() == 2)
-                                                        {
-                                                                doubleClicked(view, asset, path);
-                                                        }
-                                                        else if (evt.isShiftDown())
-                                                        {
-                                                                shiftClick(view, asset, path);
-                                                        }
-                                                        else if (evt.isControlDown())
-                                                        {
-                                                                controlClick(view, asset, path);
-                                                        }
-                                                        else
-                                                        {
-                                                                EditBus.send(new PositionChanging(editPane));
-                                                                textArea.setCaretPosition(asset.getStart().getOffset());
-                                                        }
-
-                                                }
-                                                if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
-                                                {
-                                                        if (searchField.getText().length() > 0)		// NOPMD
-                                                        {
-                                                                searchField.setText("");
-                                                                updateFilter(false);
-                                                        }
-                                                }
-                                        }
-                                        super.processMouseEvent(evt);
-                                        searchField.requestFocusInWindow();
-                                        if (path != null)
-                                        {
-                                                selectPath(path);
-                                        }
-                                        break;                                        // }}}
-                                        // {{{ MOUSE_EXITED...
-                                case MouseEvent.MOUSE_EXITED:
-                                        view.getStatus().setMessage(null);
-                                        super.processMouseEvent(evt);
-                                        break;                                        // }}}
-                                default:
-                                        super.processMouseEvent(evt);
-                                        break;
+                        case MouseEvent.MOUSE_PRESSED:
+                        	TreePath path = getPathForLocation(evt.getX(), evt.getY());
+                        	if (path != null)
+                        	{
+                        		Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                        		
+                        		if (value instanceof IAsset)
+                        		{
+                        			IAsset asset = (IAsset) value;
+                        			
+                        			JEditTextArea textArea = view.getTextArea();
+                        			EditPane editPane = view.getEditPane();
+                        			
+                        			if (evt.getClickCount() == 2)
+                        			{
+                        				doubleClicked(view, asset, path);
+                        			}
+                        			else if (evt.isShiftDown())
+                        			{
+                        				shiftClick(view, asset, path);
+                        			}
+                        			else if (evt.isControlDown())
+                        			{
+                        				controlClick(view, asset, path);
+                        			}
+                        			else
+                        			{
+                        				EditBus.send(new PositionChanging(editPane));
+                        				textArea.setCaretPosition(asset.getStart().getOffset());
+                        			}
+                        			
+                        		}
+                        		if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
+                        		{
+                        			if (searchField.getText().length() > 0)		// NOPMD
+                        			{
+                        				searchField.setText("");
+                        				updateFilter(false);
+                        			}
+                        		}
+                        	}
+                        	super.processMouseEvent(evt);
+                        	searchField.requestFocusInWindow();
+                        	if (path != null)
+                        	{
+                        		selectPath(path);
+                        	}
+                        	break;                                        // }}}
+                        	// {{{ MOUSE_EXITED...
+                        case MouseEvent.MOUSE_EXITED:
+                        	view.getStatus().setMessage(null);
+                        	super.processMouseEvent(evt);
+                        	break;                                        // }}}
+                        default:
+                        	super.processMouseEvent(evt);
+                        	break;
                         }
                 }
-
+                
                 protected void doubleClicked(View view, IAsset asset, TreePath path)
                 {
                 }
-
+                
                 protected void shiftClick(View view, IAsset asset, TreePath path)
                 {
                         JEditTextArea textArea = view.getTextArea();
@@ -907,25 +905,25 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         Selection.Range range = new Selection.Range(asset.getStart().getOffset(), asset.getEnd().getOffset());
                         textArea.addToSelection(range);
                 }
-
+                
                 protected void controlClick(View view, IAsset asset, TreePath path)
                 {
                         JEditTextArea textArea = view.getTextArea();
                         textArea.getDisplayManager().narrow(textArea.getLineOfOffset(asset.getStart().getOffset()), textArea.getLineOfOffset(asset.getEnd().getOffset()));
                 }
         }        // }}}
-
+        
         // {{{ ActionHandler class
         class ActionHandler implements ActionListener
         {
                 /** A counter for counting how deep in recursion we are.
-                 *  Since a call to reloadParserCombo can cause itemselected events
-                 *  from the parserCombo,
-                 */
+                *  Since a call to reloadParserCombo can cause itemselected events
+                *  from the parserCombo,
+                */
                 int level =0;
                 public void actionPerformed(ActionEvent evt)
                 {
-
+                	
                         // Workaround to avoid infinite recursion as a result of parsercombos
                         // updating
                         synchronized (this)
@@ -1005,19 +1003,19 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         b.setProperty("usermode", Boolean.TRUE);
                                 }
                                 propertiesChanged();
-
+                                
                         }
                         else if (evt.getSource() == parseBtn && stopIcon.equals(parseBtn.getIcon()))
                         {
                                 SideKickPlugin.stop(view);
                                 SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						parseBtn.setIcon(parseIcon);
-						parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
-					}
-				});
+                                	{
+                                		public void run()
+                                		{
+                                			parseBtn.setIcon(parseIcon);
+                                			parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
+                                		}
+                                	});
                         }
                         if (evt.getSource() == parseBtn || evt.getSource() == parserCombo)
                         {
@@ -1029,7 +1027,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 							{
 								parseBtn.setIcon(stopIcon);
 								parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.stop-parsing"));
-
+								
 							}
 						});	
                         	}
@@ -1052,7 +1050,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         level--;
                 }
         }        // }}}
-
+        
         // {{{ CaretHandler class
         class CaretHandler implements CaretListener
         {
@@ -1068,7 +1066,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }        // }}}
-
+        
         protected void find_visible_nodes(HashSet<TreePath> set, DefaultMutableTreeNode node)
         {
                 TreePath path = new TreePath(node.getPath());
@@ -1079,39 +1077,39 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 find_visible_nodes(set, (DefaultMutableTreeNode) e.nextElement());
                         }
-
+                        
                 }
         }
-
+        
         protected void filter_visible_nodes(FilteredTreeModel model, HashSet<TreePath> visible, DefaultMutableTreeNode node)
         {
                 if (!jEdit.getBooleanProperty(SideKick.SHOW_FILTER))
                 {
                         return;
                 }
-
+                
                 TreePath path = new TreePath(node.getPath());
                 if (!visible.contains(path))
                 {
                         return;
                 }
-
+                
                 tree.expandPath(path);
                 for (Enumeration e = node.children(); e.hasMoreElements();)
                 {
                         filter_visible_nodes(model, visible, (DefaultMutableTreeNode) e.nextElement());
                 }
         }
-
+        
         public void updateFilter(boolean with_delay)
         {
                 if (!jEdit.getBooleanProperty(SideKick.SHOW_FILTER))
                 {
                         return;
                 }
-
+                
                 FilteredTreeModel ftm = (FilteredTreeModel) tree.getModel();
-
+                
                 if (searchField.getText().length() == 0)
                 {
                         ftm.clearFilter();
@@ -1133,10 +1131,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         {
                                                 tree.expandRow(j);
                                         }
-
+                                        
                                 }
                         }
-
+                        
                         if (SideKick.isFollowCaret() && with_delay)
                         {
                                 expandTreeWithDelay();
@@ -1158,12 +1156,12 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }
-
+        
         public void updateFilter()
         {
                 updateFilter(true);
         }
-
+        
         public void setSearchFilter(String text)
         {
                 searchField.setText(text);
@@ -1173,11 +1171,11 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         {
                 return searchField.getText();
         }
-
+        
         // {{{ KeyHandler class
         class KeyHandler extends KeyAdapter
         {
-
+        	
                 protected void next()
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -1186,7 +1184,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 node = (DefaultMutableTreeNode) model.getRoot();
                         }
-
+                        
                         // standard tree movement for next:
                         // If selected node has children and selected node is expanded,
                         // then next is the first child of the selected node, otherwise,
@@ -1218,14 +1216,14 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 }
                                 node = next;
                         }
-
+                        
                         if (node != null)
                         {
                                 TreePath p = new TreePath(node.getPath());
                                 selectPath(p);
                         }
                 }
-
+                
                 protected void nextLeaf()
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -1256,7 +1254,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 }
                         }
                 }
-
+                
                 protected void prev()
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -1265,7 +1263,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 node = (DefaultMutableTreeNode) model.getRoot();
                         }
-
+                        
                         // standard movement for previous:
                         // Initially, previous is the previous sibling.
                         // If previous sibling is null, then that means the current node
@@ -1295,14 +1293,14 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 node = prev;
                         }
-
+                        
                         if (node != null)
                         {
                                 TreePath p = new TreePath(node.getPath());
                                 selectPath(p);
                         }
                 }
-
+                
                 protected void prevLeaf()
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -1333,7 +1331,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 }
                         }
                 }
-
+                
                 public void keyPressed(KeyEvent evt)
                 {
                         if (caretTimer != null)
@@ -1342,72 +1340,76 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
 			// Funa edit start
 			if (ClassLoader.getSystemResource("org/gjt/sp/jedit/gui/UserKey.class") != null) {
-				// org.gjt.sp.jedit.gui.UserKey.consume(evt);
-				org.gjt.sp.jedit.gui.UserKey.consume(evt, 0, 0, 0, 0, true);
+				org.gjt.sp.jedit.gui.UserKey.consume(evt, 
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					true);
 				if (evt.isConsumed()) {
 					return;
 				}
 			}
-
+			
                         switch (evt.getKeyCode() )
                         {
-                                case KeyEvent.VK_ESCAPE:
-                                        evt.consume();
-                                        if (searchField.getText().length() == 0)
-                                        {
-                                                view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
-                                        }
-                                        else
-                                        {
-                                                searchField.setText("");
-                                                updateFilter();
-                                        }
-                                        break;
-                                case KeyEvent.VK_ENTER:
-                                        evt.consume();
-
-                                        TreePath path = tree.getSelectionPath();
-
-                                        if (path != null)
-                                        {
-                                                Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-
-                                                if (value instanceof IAsset)
-                                                {
-                                                        IAsset asset = (IAsset) value;
-
-                                                        JEditTextArea textArea = view.getTextArea();
-
-                                                        if (evt.isShiftDown())
-                                                        {
-                                                                textArea.setCaretPosition(asset.getEnd().getOffset());
-                                                                textArea.addToSelection(new Selection.Range(asset.getStart().getOffset(), asset.getEnd().getOffset() + 1));
-                                                        }
-                                                        else
-                                                        {
-                                                                if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
-                                                                {
-                                                                        if (searchField.getText().length() > 0)		// NOPMD
-                                                                        {
-                                                                                searchField.setText("");
-                                                                                updateFilter();
-                                                                        }
-                                                                }
-                                                                textArea.setCaretPosition(asset.getStart().getOffset());
-                                                                selectPath(path);
-                                                                textArea.requestFocus();
-                                                        }
-							
-							// Funa edit
-							if (!evt.isAltDown()) {
-								view.getTextArea().grabFocus();
-							} else {
-								// searchField.grabFocus();
-								tree.grabFocus();
+                        case KeyEvent.VK_ESCAPE:
+                        	evt.consume();
+                        	if (searchField.getText().length() == 0)
+                        	{
+                        		view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
+                        	}
+                        	else
+                        	{
+                        		searchField.setText("");
+                        		updateFilter();
+                        	}
+                        	break;
+                        case KeyEvent.VK_ENTER:
+                        	evt.consume();
+                        	
+                        	TreePath path = tree.getSelectionPath();
+                        	
+                        	if (path != null)
+                        	{
+                        		Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
+                        		
+                        		if (value instanceof IAsset)
+                        		{
+                        			IAsset asset = (IAsset) value;
+                        			
+                        			JEditTextArea textArea = view.getTextArea();
+                        			
+                        			if (evt.isShiftDown())
+                        			{
+                        				textArea.setCaretPosition(asset.getEnd().getOffset());
+                        				textArea.addToSelection(new Selection.Range(asset.getStart().getOffset(), asset.getEnd().getOffset() + 1));
+                        			}
+                        			else
+                        			{
+                        				if (!jEdit.getBooleanProperty("sidekick.persistentFilter"))
+                        				{
+                        					if (searchField.getText().length() > 0)		// NOPMD
+                        					{
+                        						searchField.setText("");
+                        						updateFilter();
+                        					}
+                        				}
+                        				textArea.setCaretPosition(asset.getStart().getOffset());
+                        				selectPath(path);
+                        				textArea.requestFocus();
+                        			}
+                        			
+                        			// Funa edit
+                        			if (!evt.isAltDown()) {
+                        				view.getTextArea().grabFocus();
+                        			} else {
+                        				// searchField.grabFocus();
+                        				tree.grabFocus();
                                                 }
                                         }
 				}
-                                        break;
+				break;
 			}
 			
 			if (!evt.isConsumed() && evt.getSource().equals(searchField)){
@@ -1466,7 +1468,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 case KeyEvent.VK_PAGE_UP:
                                         {
                                                 evt.consume();
-
+                                                
                                                 int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
                                                 for (int i = 0; i < offset; ++i)
                                                 {
@@ -1484,7 +1486,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 case KeyEvent.VK_PAGE_DOWN:
                                         {
                                                 evt.consume();
-
+                                                
                                                 int offset = tree.getScrollableUnitIncrement(tree.getParent().getBounds(), javax.swing.SwingConstants.VERTICAL, 0);
                                                 for (int i = 0; i < offset; ++i)
                                                 {
@@ -1501,11 +1503,11 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                         break;
                                 default:
                                         break;
+                                }
                         }
-                }
 			// funa edit end
 		}
-
+		
                 public void keyTyped(KeyEvent evt)
                 {
 			// Funa edit
@@ -1523,7 +1525,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }        // }}}
-
+        
         // {{{ MouseHandler class
         class MouseHandler extends MouseMotionAdapter
         {
@@ -1537,7 +1539,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         else
                         {
                                 Object value = ((DefaultMutableTreeNode) path.getLastPathComponent()).getUserObject();
-
+                                
                                 if (value instanceof IAsset)
                                 {
                                         String info = ((IAsset) value).getShortString();
@@ -1546,18 +1548,18 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         }
                 }
         }        // }}}
-
+        
         // {{{ SidekickProperties class
         /**
-         * This class creates an options dialog containing an optionpane
-         * for each SideKick service, as well as one for SideKick itself.
-         * This properties pane is mode-sensitive.
-         *
-         * sidekick options, and one for the specific plugin's option pane.
-         */
+        * This class creates an options dialog containing an optionpane
+        * for each SideKick service, as well as one for SideKick itself.
+        * This properties pane is mode-sensitive.
+        *
+        * sidekick options, and one for the specific plugin's option pane.
+        */
         class SideKickProperties implements ActionListener
         {
-
+        	
                 public void actionPerformed(ActionEvent e)
                 {
                         try
@@ -1568,15 +1570,15 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 Log.log(Log.ERROR, this, "dialog create failed", ex);
                         }
-
+                        
                 }
-
+                
         }        // }}}
-
+        
         // {{{ Renderer class
         class Renderer extends EnhancedTreeCellRenderer
         {
-        		@Override
+        	@Override
                 protected void configureTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus)
                 {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
@@ -1584,7 +1586,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         if (nodeValue instanceof IAsset)
                         {
                                 IAsset asset = (IAsset) node.getUserObject();
-
+                                
                                 setText(asset.getShortString());
                                 setIcon(asset.getIcon());
                         }
@@ -1598,14 +1600,14 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 setIcon(null);
                         }
                 }
-
-				@Override
-				protected TreeCellRenderer newInstance()
-				{
-					return new Renderer();
-				}
+                
+                @Override
+                protected TreeCellRenderer newInstance()
+                {
+                	return new Renderer();
+                }
         }        // }}}
-
-
+        
+        
         // }}}
 }
