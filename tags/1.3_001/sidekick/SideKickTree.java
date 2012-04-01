@@ -128,44 +128,66 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         // }}}
         
 	// Funa edit
-	public void findString(String nodename, boolean startWith, boolean gotoSelected) {
-		findNode(tree.getModel().getRoot(), nodename, startWith, gotoSelected);
+	public void findString(String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
+		findNode(tree.getModel().getRoot(), nodename, onlyName, startWith, ignoreCase, onlyLeaf);
 	}
 	
-	boolean findNode(Object node, String nodename, boolean startWith, boolean gotoSelected) {
+	boolean findNode(Object node, String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
 		TreeModel tm = tree.getModel();
-		// System.out.println(node);
-		if (tm.isLeaf(node)) {
-			if ((startWith && node.toString().startsWith(nodename)) ||
-				(!startWith && node.toString().equals(nodename))) {
-			// System.out.println(node instanceof TreeNode && tm instanceof DefaultTreeModel);
+		if (tm instanceof FilteredTreeModel){
+			tm = ((FilteredTreeModel)tm).getModel();
+		}
+		
+		String assetName = "";
+		IAsset asset = null;
+		TreePath tp = null;
+		boolean isFind = false;
+		
+		if (!onlyLeaf || tm.isLeaf(node)) {
 			if (node instanceof TreeNode && tm instanceof DefaultTreeModel) {
-				
 				TreeNode tns[] = ((DefaultTreeModel)tm).getPathToRoot((TreeNode)node);
-				TreePath tp = new TreePath(tns);
-				if (gotoSelected) {
-					tree.scrollPathToVisible(tp);
-					tree.setSelectionPath(tp);
-				}
-				Object value = ((DefaultMutableTreeNode)tp
-					.getLastPathComponent()).getUserObject();
-					
-					if (value instanceof IAsset) {
-						IAsset asset = (IAsset)value;
-						
-						JEditTextArea textArea = view.getTextArea();
-						
-						textArea.setCaretPosition(asset.getStart().getOffset());
-						
-						view.getTextArea().grabFocus();
+				tp = new TreePath(tns);
+				Object value = ((DefaultMutableTreeNode)tp.getLastPathComponent()).getUserObject();
+				
+				if (value instanceof IAsset) {
+					asset = (IAsset)value;
+					if (onlyName){
+						assetName = asset.getName();
+					} else {
+						assetName = asset.getLongString();
 					}
-					return true;
-			}
 				}
-		} else {
+			}
+			
+			if (asset != null){
+				if (ignoreCase){
+					nodename = nodename.toLowerCase();
+					assetName = assetName.toLowerCase();
+				}
+				
+				if (startWith){
+					if (assetName.startsWith(nodename)){
+						isFind = true;
+					}
+				} else {
+					if (assetName.equals(nodename)){
+						isFind = true;
+					}
+				}
+				
+				if (isFind){
+					JEditTextArea textArea = view.getTextArea();
+					textArea.setCaretPosition(asset.getStart().getOffset());
+					view.getTextArea().grabFocus();
+					return true;
+				}
+			}
+		}
+		
+		if (!tm.isLeaf(node)) {
 			int count = tree.getModel().getChildCount(node);
 			for (int i = 0; i < count; i++) {
-				if (findNode(tree.getModel().getChild(node, i), nodename, startWith, gotoSelected)) {
+				if (findNode(tree.getModel().getChild(node, i), nodename, onlyName, startWith, ignoreCase, onlyLeaf)) {
 					return true;
 				}
 			}
