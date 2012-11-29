@@ -1,23 +1,23 @@
 /*
- * SideKickTree.java
- * :tabSize=8:indentSize=8:noTabs=false:
- * :folding=explicit:collapseFolds=1:
- *
- * Copyright (C) 2000, 2003 Slava Pestov
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+* SideKickTree.java
+* :tabSize=8:indentSize=8:noTabs=false:
+* :folding=explicit:collapseFolds=1:
+*
+* Copyright (C) 2000, 2003 Slava Pestov
+*
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 package sidekick;
@@ -517,74 +517,84 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 onSave.setState(SideKick.isParseOnSave());
                 Buffer parsedBuffer = view.getBuffer();
                 SideKickParser parser = SideKickPlugin.getParserForBuffer(parsedBuffer);
-                if (parser != null)
-                {
-                        Object item = parserCombo.getSelectedItem();
-                        if (item != parser.getName())
-                        {
-                                parserCombo.setSelectedItem(parser.getName());
-                        }
-                }
-                
-                data = SideKickParsedData.getParsedData(view);
-                if (parser == null || data == null)
-                {
-                        DefaultMutableTreeNode root = new DefaultMutableTreeNode(parsedBuffer.getName());
-                        root.insert(new DefaultMutableTreeNode(jEdit.getProperty("sidekick-tree.not-parsed")),0);
-                        tree.setModel(new FilteredTreeModel(new DefaultTreeModel(root), true));
-                        lastParsedBuffer = null;
-                }
-                else
-                {
-                        tree.setModel(new FilteredTreeModel(data.tree, true));
-                        lastParsedBuffer = parsedBuffer;
-                        if (SideKick.isFollowCaret())
-                        {
-                                expandTreeAt(view.getTextArea().getCaretPosition());
-                        }
-                }
-                updateSearchData();
-                
-                if (data != null && data.expansionModel != null)
-                {
-                        // collapse all rows, then expand per the expansion model
-                        for (int i = tree.getRowCount() - 1; i >= 0; i--)
-                        {
-                                tree.collapseRow(i);
-                        }
-                        for (Integer row : data.expansionModel)
-                        {
-                                tree.expandRow(row);
-                        }
-                }
-                else
-                {
-                        if (autoExpandTree == -1)
-                        {
-                                expandAll(true);
-                        }
-                        else if (autoExpandTree == 0)
-                        {
-                                expandAll(false);
-                        }
-                        else if (autoExpandTree > 0)
-                        {
-                                tree.expandRow(0);
-                                for (int i = 1; i < autoExpandTree; i++)
-                                {
-                                        for (int j = tree.getRowCount() - 1; j > 0; j--)
-                                        {
-                                                tree.expandRow(j);
-                                        }
-                                        
-                                }
-                        }
-                }
-                
-                if (searchField.getText().length() != 0)
-                {
-                        updateFilter();
-                }
+                // funa edit
+                boolean hasFocus = tree.hasFocus();
+                try {
+                	if (parser != null)
+                	{
+                		Object item = parserCombo.getSelectedItem();
+                		if (item != parser.getName())
+                		{
+                			parserCombo.setSelectedItem(parser.getName());
+                		}
+                	}
+                	
+                	data = SideKickParsedData.getParsedData(view);
+                	if (parser == null || data == null)
+                	{
+                		DefaultMutableTreeNode root = new DefaultMutableTreeNode(parsedBuffer.getName());
+                		root.insert(new DefaultMutableTreeNode(jEdit.getProperty("sidekick-tree.not-parsed")),0);
+                		tree.setModel(new FilteredTreeModel(new DefaultTreeModel(root), true));
+                		lastParsedBuffer = null;
+                	}
+                	else
+                	{
+                		tree.setModel(new FilteredTreeModel(data.tree, true));
+                		lastParsedBuffer = parsedBuffer;
+                		if (SideKick.isFollowCaret())
+                		{
+                			expandTreeAt(view.getTextArea().getCaretPosition());
+                		}
+                	}
+                	updateSearchData();
+                	
+                	if (data != null && data.expansionModel != null)
+                	{
+                		// collapse all rows, then expand per the expansion model
+                		for (int i = tree.getRowCount() - 1; i >= 0; i--)
+                		{
+                			tree.collapseRow(i);
+                		}
+                		for (Integer row : data.expansionModel)
+                		{
+                			tree.expandRow(row);
+                		}
+                	}
+                	else
+                	{
+                		if (autoExpandTree == -1)
+                		{
+                			expandAll(true);
+                		}
+                		else if (autoExpandTree == 0)
+                		{
+                			expandAll(false);
+                		}
+                		else if (autoExpandTree > 0)
+                		{
+                			tree.expandRow(0);
+                			for (int i = 1; i < autoExpandTree; i++)
+                			{
+                				for (int j = tree.getRowCount() - 1; j > 0; j--)
+                				{
+                					tree.expandRow(j);
+                				}
+                				
+                			}
+                		}
+                	}
+                	
+                	if (searchField.getText().length() != 0)
+                	{
+                		updateFilter();
+                	}
+                	
+                	// funa edit
+                } finally {
+                	if (hasFocus){
+                		tree.requestFocusInWindow();
+                	}
+		}
                 
         }        // }}}
         
