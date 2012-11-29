@@ -249,6 +249,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 followCaret.addActionListener(ah);
                 JLabel search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
                 searchField = new JTextField();
+                // Funa Edit
+                search.setDisplayedMnemonic('t');
+                search.setLabelFor(searchField);
+		
                 searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
                 RolloverButton clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
                 clearSearchBtn.addActionListener(new ActionListener()
@@ -376,8 +380,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         // {{{ focusOnDefaultComponent() method
         public void focusOnDefaultComponent()
         {
-		//funa edit
-		searchField.requestFocusInWindow();
+		tree.requestFocusInWindow();
         }        // }}}
         
         // {{{ addNotify() method

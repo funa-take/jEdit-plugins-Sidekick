@@ -1,3 +1,9 @@
+2012/11/29
+  ・フォーカスを searchField から tree へ変更
+  ・searchField へのニーモニックを追加(t)
+    FileBrower とカブるの注意
+  
+
 2012/11/26
 1.4 改良
 
