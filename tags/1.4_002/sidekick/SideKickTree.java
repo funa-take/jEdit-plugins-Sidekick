@@ -1556,6 +1556,22 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 default:
                                         break;
                                 }
+                                // funa edit
+                        } else if (!evt.isConsumed() && evt.getSource().equals(tree)){
+                        	if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                        		evt.consume();
+                                        if (searchField.getText().length() <= 1)
+                                        {
+                                                searchField.setText("");
+                                        }
+                                        else
+                                        {
+                                                String s = searchField.getText();
+                                                s = s.substring(0, s.length() - 1);
+                                                searchField.setText(s);
+                                        }
+                                        updateFilter();
+                        	}
                         }
 			// funa edit end
 		}
