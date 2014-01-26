@@ -1,6 +1,6 @@
 /*
  * SideKickTree.java
- * :tabSize=4:indentSize=4:noTabs=false:
+* :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000-2012 Slava Pestov, Dale Anson, Shlomy Reinstein
@@ -57,6 +57,8 @@ import javax.swing.Timer;
 import javax.swing.JLabel;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
@@ -127,6 +129,76 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         private JTextField searchField;
         // }}}
 
+	// Funa edit
+	public void findString(String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
+		findNode(tree.getModel().getRoot(), nodename, onlyName, startWith, ignoreCase, onlyLeaf);
+	}
+	
+	boolean findNode(Object node, String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
+		TreeModel tm = tree.getModel();
+		if (tm instanceof FilteredTreeModel){
+			tm = ((FilteredTreeModel)tm).getModel();
+		}
+		
+		String assetName = "";
+		IAsset asset = null;
+		TreePath tp = null;
+		boolean isFind = false;
+		
+		if (!onlyLeaf || tm.isLeaf(node)) {
+			if (node instanceof TreeNode && tm instanceof DefaultTreeModel) {
+				TreeNode tns[] = ((DefaultTreeModel)tm).getPathToRoot((TreeNode)node);
+				tp = new TreePath(tns);
+				Object value = ((DefaultMutableTreeNode)tp.getLastPathComponent()).getUserObject();
+				
+				if (value instanceof IAsset) {
+					asset = (IAsset)value;
+					if (onlyName){
+						assetName = asset.getName();
+					} else {
+						assetName = asset.getLongString();
+					}
+				}
+			}
+			
+			if (asset != null){
+				if (ignoreCase){
+					nodename = nodename.toLowerCase();
+					assetName = assetName.toLowerCase();
+				}
+				
+				if (startWith){
+					if (assetName.startsWith(nodename)){
+						isFind = true;
+					}
+				} else {
+					if (assetName.equals(nodename)){
+						isFind = true;
+					}
+				}
+				
+				if (isFind){
+					JEditTextArea textArea = view.getTextArea();
+					textArea.setCaretPosition(asset.getStart().getOffset());
+					view.getTextArea().grabFocus();
+					return true;
+				}
+			}
+		}
+		
+		if (!tm.isLeaf(node)) {
+			int count = tree.getModel().getChildCount(node);
+			for (int i = 0; i < count; i++) {
+				if (findNode(tree.getModel().getChild(node, i), nodename, onlyName, startWith, ignoreCase, onlyLeaf)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	
         // {{{ SideKickTree constructor
         public SideKickTree(View view, boolean docked)
         {
@@ -179,6 +251,10 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 followCaret.addActionListener(ah);
                 JLabel search = new JLabel(jEdit.getProperty("sidekick-tree.filter.label") + " ");
                 searchField = new JTextField();
+                // Funa Edit
+                search.setDisplayedMnemonic('t');
+                search.setLabelFor(searchField);
+		
                 searchField.setToolTipText(jEdit.getProperty("sidekick-tree.filter.tooltip"));
                 RolloverButton clearSearchBtn = new RolloverButton(GUIUtilities.loadIcon("22x22/actions/edit-clear.png"));
                 clearSearchBtn.addActionListener(new ActionListener()
@@ -244,6 +320,20 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 tree.setVisibleRowCount(10);
                 tree.setCellRenderer(new Renderer());
 
+                // funa edit
+                tree.addTreeSelectionListener(
+                	new TreeSelectionListener(){
+                		public void valueChanged(TreeSelectionEvent e){
+                			Object value = ((DefaultMutableTreeNode) e.getPath().getLastPathComponent()).getUserObject();
+                			
+                			if (value instanceof IAsset)
+                			{
+                				String info = ((IAsset) value).getShortString();
+                				SideKickTree.this.view.getStatus().setMessage(info);
+                			}
+                		}
+                	}
+                	);
                 topPanel.add(BorderLayout.CENTER, new JScrollPane(tree));
 
                 status = new JTextArea();
@@ -434,6 +524,9 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                 onSave.setState(SideKick.isParseOnSave());
                 Buffer parsedBuffer = view.getBuffer();
                 SideKickParser parser = SideKickPlugin.getParserForBuffer(parsedBuffer);
+                // funa edit
+                boolean hasFocus = tree.hasFocus();
+                try {
                 if (parser != null)
                 {
                         Object item = parserCombo.getSelectedItem();
@@ -503,6 +596,13 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         updateFilter();
                 }
 
+                	// funa edit
+                } finally {
+                	if (hasFocus){
+                		tree.requestFocusInWindow();
+                	}
+		}
+                
         }        // }}}
 
         // {{{ expandAll() methods
@@ -1290,6 +1390,18 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 caretTimer.stop();
                         }
+			// Funa edit start
+			if (ClassLoader.getSystemResource("org/gjt/sp/jedit/gui/UserKey.class") != null) {
+				org.gjt.sp.jedit.gui.UserKey.consume(evt, 
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					org.gjt.sp.jedit.gui.UserKey.ALLOW_CTRL | org.gjt.sp.jedit.gui.UserKey.ALLOW_SHIFT,
+					true);
+				if (evt.isConsumed()) {
+					return;
+				}
+			}
 
                         switch (evt.getKeyCode() )
                         {
@@ -1339,9 +1451,30 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                                                 selectPath(path);
                                                                 textArea.requestFocus();
                                                         }
+                        			
+                        			// Funa edit
+                        			if (!evt.isAltDown()) {
+                        				view.getTextArea().grabFocus();
+                        			} else {
+                        				// searchField.grabFocus();
+                        				tree.grabFocus();
                                                 }
                                         }
+				}
                                         break;
+			}
+			
+			if (!evt.isConsumed() && evt.getSource().equals(searchField)){
+				switch (evt.getKeyCode()) {
+				case KeyEvent.VK_ESCAPE:
+					evt.consume();
+					if (searchField.getText().length() == 0) {
+						view.getDockableWindowManager().hideDockableWindow(SideKickPlugin.NAME);
+					} else {
+						searchField.setText("");
+						updateFilter();
+					}
+					break;
                                 case KeyEvent.VK_BACK_SPACE:
                                         evt.consume();
                                         if (searchField.getText().length() <= 1)
@@ -1423,10 +1556,32 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                                 default:
                                         break;
                         }
+                                // funa edit
+                        } else if (!evt.isConsumed() && evt.getSource().equals(tree)){
+                        	if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                        		evt.consume();
+                                        if (searchField.getText().length() <= 1)
+                                        {
+                                                searchField.setText("");
                 }
+                                        else
+                                        {
+                                                String s = searchField.getText();
+                                                s = s.substring(0, s.length() - 1);
+                                                searchField.setText(s);
+                                        }
+                                        updateFilter();
+                        	}
+                        }
+			// funa edit end
+		}
 
                 public void keyTyped(KeyEvent evt)
                 {
+			// Funa edit
+			if (evt.isAltDown()) {
+				return;
+			}
                         Character c = evt.getKeyChar();
                         // TODO: What is the correct combo here to filter
                         // non-identifier characters?
