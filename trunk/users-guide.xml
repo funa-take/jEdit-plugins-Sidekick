@@ -213,7 +213,12 @@
   The SideKick plugin adds a new <quote>sidekick</quote> fold handler that
   folds the buffer according to the sidekick tree. See the jEdit user's guide
   for general details about folding.
-</para>
+  </para>
+  <para>
+    Since the folding is based on an accurate parsing of the file, it is suggested
+    that "Parse on keystroke" be selected in the Sidekick options. Otherwise, the
+    folding will be out of sync with the file until the file is reparsed.
+  </para>
 
     <para>
       <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Narrow to
@@ -232,7 +237,8 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
   Completion Popup</guimenuitem> command. Each plugin that uses SideKick
   implements its own specific completion behavior; see the plugin documentation
-  for details.
+  for details. Since completion is often based on an accurate parsing of the file,
+  it is suggested that "Parse on keystroke" be selected in the Sidekick options.
  </para>
 
   </chapter>
@@ -254,7 +260,7 @@
   property file:
  </para>
 
-      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.4</programlisting>
+      <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 1.6</programlisting>
 
       <para>
   Note that you must replace <replaceable>n</replaceable> with the
