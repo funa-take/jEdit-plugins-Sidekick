@@ -1,0 +1,55 @@
+○リポジトリ情報
+  https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/
+  svn merge -x "-b --ignore-eol-style" https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/tags/SideKick-1.5 https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/tags/SideKick-1.6 
+
+
+2014-06-08
+  ・1.6に対応
+
+2014/01/26
+  ・1.5に対応
+
+2014/01/25
+  ・ツリーにフォーカスがある場合の Back space の挙動を追加
+  
+2014/01/22
+  ・フォーカスが tree にある場合に、選択されているノード情報が statusbar に表示されないのを修正
+
+2012/11/29
+  ・フォーカスを searchField から tree へ変更
+  ・searchField へのニーモニックを追加(t)
+    FileBrower とカブるの注意
+  ・ツリーがリロードされるときにフォーカスが移動するのを修正
+
+2012/11/26
+1.4 改良
+
+2012/03/23
+やっぱり使ってみる。
+UserKey で CtrlとShiftを使えるようにした。
+フォーカスを戻した。(searchTextFieldに来るように）
+ツリーで選択した項目を StatusBar に表示
+
+2012/03/21
+1.3 を改良
+markersets を必要とするので使わない
+
+2010/04/06
+・sidekick 0.9 を改良
+・フォーカスが常にtreeに来るように修正
+・キー操作修正
+・findstring追加
+
+
+2009/12/28
+4.3 に対応
+
+2007/10/26
+・findStringの機能追加
+（CodeBrowserと違ってキャッシュは無い）
+
+2007/10/21
+4.3に対応
+
+・初期表示時のフォーカス
+・キー操作
