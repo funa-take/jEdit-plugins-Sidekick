@@ -1,3 +1,8 @@
+○2015/06/17
+  findStringとfindNode の動作を修正。
+  selectString を追加。
+  updateFilterの動作後にselectStringを呼び出すように修正
+
 ○リポジトリ情報
   https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/
   svn merge -x "-b --ignore-eol-style" https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/tags/SideKick-1.5 https://svn.code.sf.net/p/jedit/svn/plugins/SideKick/tags/SideKick-1.6 
