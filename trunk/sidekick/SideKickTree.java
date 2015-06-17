@@ -1217,7 +1217,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 expandAll(true);
                         }
-                        selectString(searchField.getText(), true, true, false, false);
+                        selectString(searchField.getText(), true, true, true, false);
                 }
         }
         
