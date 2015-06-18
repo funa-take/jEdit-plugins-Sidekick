@@ -130,8 +130,14 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
         // }}}
         
 	// Funa edit
-	public void findString(String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
-		Object node = findNode(tree.getModel().getRoot(), nodename, onlyName, startWith, ignoreCase, onlyLeaf);
+	public enum FindMode {
+		EXACT_MATCH, //完全一致
+		FORWARD_MATCH, //前方一致
+		PARTIAL_MATCH, //部分一致
+	}
+	
+	public void findString(String nodename, boolean onlyName, FindMode findMode, boolean ignoreCase, boolean onlyLeaf) {
+		Object node = findNode(tree.getModel().getRoot(), nodename, onlyName, findMode, ignoreCase, onlyLeaf);
 		if (node != null) {
 			IAsset asset = (IAsset)((DefaultMutableTreeNode)node).getUserObject();
 			JEditTextArea textArea = view.getTextArea();
@@ -140,8 +146,8 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		}
 	}
 	
-	public void selectString(String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
-		Object node = findNode(tree.getModel().getRoot(), nodename, onlyName, startWith, ignoreCase, onlyLeaf);
+	public void selectString(String nodename, boolean onlyName, FindMode findMode, boolean ignoreCase, boolean onlyLeaf) {
+		Object node = findNode(tree.getModel().getRoot(), nodename, onlyName, findMode, ignoreCase, onlyLeaf);
 		TreeModel tm = tree.getModel();
 		if (node != null && tm instanceof FilteredTreeModel) {
 			tm = ((FilteredTreeModel)tm).getModel();
@@ -152,7 +158,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 	
 	
 	
-	Object findNode(Object node, String nodename, boolean onlyName, boolean startWith, boolean ignoreCase, boolean onlyLeaf) {
+	Object findNode(Object node, String nodename, boolean onlyName, FindMode findMode, boolean ignoreCase, boolean onlyLeaf) {
 		TreeModel tm = tree.getModel();
 		if (tm instanceof FilteredTreeModel){
 			tm = ((FilteredTreeModel)tm).getModel();
@@ -184,14 +190,22 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 					assetName = assetName.toLowerCase();
 				}
 				
-				if (startWith){
-					if (assetName.startsWith(nodename)){
-						return node;
-					}
-				} else {
+				switch (findMode) {
+				case EXACT_MATCH: //完全一致
 					if (assetName.equals(nodename)){
 						return node;
 					}
+					break;
+				case FORWARD_MATCH: //前方一致
+					if (assetName.startsWith(nodename)){
+						return node;
+					}
+					break;
+				case PARTIAL_MATCH: //部分一致
+					if (assetName.indexOf(nodename) >= 0){
+						return node;
+					}
+					break;
 				}
 			}
 		}
@@ -199,7 +213,7 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
 		if (!tm.isLeaf(node)) {
 			int count = tree.getModel().getChildCount(node);
 			for (int i = 0; i < count; i++) {
-				Object obj =  findNode(tree.getModel().getChild(node, i), nodename, onlyName, startWith, ignoreCase, onlyLeaf);
+				Object obj =  findNode(tree.getModel().getChild(node, i), nodename, onlyName, findMode, ignoreCase, onlyLeaf);
 				if (obj != null) {
 					return obj;
 				}
@@ -1217,7 +1231,8 @@ public class SideKickTree extends JPanel implements DefaultFocusComponent
                         {
                                 expandAll(true);
                         }
-                        selectString(searchField.getText(), true, true, true, false);
+                        // funa edit
+                        selectString(searchField.getText(), true, FindMode.FORWARD_MATCH, true, false);
                 }
         }
         
